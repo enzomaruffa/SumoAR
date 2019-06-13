@@ -8,22 +8,28 @@
 
 /* Begin PBXBuildFile section */
 		478002FA22B13BCE00EEA906 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478002F922B13BCE00EEA906 /* AppDelegate.swift */; };
-		478002FC22B13BCE00EEA906 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478002FB22B13BCE00EEA906 /* ViewController.swift */; };
+		478002FC22B13BCE00EEA906 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478002FB22B13BCE00EEA906 /* GameViewController.swift */; };
 		478002FF22B13BCE00EEA906 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 478002FD22B13BCE00EEA906 /* Main.storyboard */; };
 		4780030122B13BCE00EEA906 /* Experience.rcproject in Sources */ = {isa = PBXBuildFile; fileRef = 4780030022B13BCE00EEA906 /* Experience.rcproject */; };
 		4780030322B13BD100EEA906 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4780030222B13BD100EEA906 /* Assets.xcassets */; };
 		4780030622B13BD100EEA906 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4780030422B13BD100EEA906 /* LaunchScreen.storyboard */; };
+		4780030E22B13E2B00EEA906 /* SelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4780030D22B13E2B00EEA906 /* SelectViewController.swift */; };
+		4780031122B140F000EEA906 /* soccerBall.usda in Resources */ = {isa = PBXBuildFile; fileRef = 4780030F22B140F000EEA906 /* soccerBall.usda */; };
+		4780031222B140F000EEA906 /* soccerBall.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4780031022B140F000EEA906 /* soccerBall.usdz */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		478002F622B13BCE00EEA906 /* SumoAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SumoAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		478002F922B13BCE00EEA906 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		478002FB22B13BCE00EEA906 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		478002FB22B13BCE00EEA906 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
 		478002FE22B13BCE00EEA906 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4780030022B13BCE00EEA906 /* Experience.rcproject */ = {isa = PBXFileReference; lastKnownFileType = file.rcproject; path = Experience.rcproject; sourceTree = "<group>"; };
 		4780030222B13BD100EEA906 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4780030522B13BD100EEA906 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4780030722B13BD100EEA906 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4780030D22B13E2B00EEA906 /* SelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectViewController.swift; sourceTree = "<group>"; };
+		4780030F22B140F000EEA906 /* soccerBall.usda */ = {isa = PBXFileReference; lastKnownFileType = asset.file.usd; path = soccerBall.usda; sourceTree = "<group>"; };
+		4780031022B140F000EEA906 /* soccerBall.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = soccerBall.usdz; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,12 +63,15 @@
 			isa = PBXGroup;
 			children = (
 				478002F922B13BCE00EEA906 /* AppDelegate.swift */,
-				478002FB22B13BCE00EEA906 /* ViewController.swift */,
+				4780030D22B13E2B00EEA906 /* SelectViewController.swift */,
+				478002FB22B13BCE00EEA906 /* GameViewController.swift */,
 				478002FD22B13BCE00EEA906 /* Main.storyboard */,
 				4780030022B13BCE00EEA906 /* Experience.rcproject */,
 				4780030222B13BD100EEA906 /* Assets.xcassets */,
 				4780030422B13BD100EEA906 /* LaunchScreen.storyboard */,
 				4780030722B13BD100EEA906 /* Info.plist */,
+				4780030F22B140F000EEA906 /* soccerBall.usda */,
+				4780031022B140F000EEA906 /* soccerBall.usdz */,
 			);
 			path = SumoAR;
 			sourceTree = "<group>";
@@ -125,9 +134,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4780031122B140F000EEA906 /* soccerBall.usda in Resources */,
 				4780030622B13BD100EEA906 /* LaunchScreen.storyboard in Resources */,
 				4780030322B13BD100EEA906 /* Assets.xcassets in Resources */,
 				478002FF22B13BCE00EEA906 /* Main.storyboard in Resources */,
+				4780031222B140F000EEA906 /* soccerBall.usdz in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -138,7 +149,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				478002FC22B13BCE00EEA906 /* ViewController.swift in Sources */,
+				4780030E22B13E2B00EEA906 /* SelectViewController.swift in Sources */,
+				478002FC22B13BCE00EEA906 /* GameViewController.swift in Sources */,
 				478002FA22B13BCE00EEA906 /* AppDelegate.swift in Sources */,
 				4780030122B13BCE00EEA906 /* Experience.rcproject in Sources */,
 			);
