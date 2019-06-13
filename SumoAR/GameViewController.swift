@@ -12,9 +12,11 @@ import RealityKit
 import MultipeerConnectivity
 
 class GameViewController: UIViewController {
+
     
+    var mcSession: MCSession?
+    var mcAdvertiserAssistant: MCAdvertiserAssistant!
     
-    var mcSession: MCSession!
     var isHost: Bool!
     
     @IBOutlet var arView: ARView!
@@ -27,20 +29,43 @@ class GameViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ball = try! Entity.loadModel(named: "soccerBall")
+        
+        createJoystick()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(true)
-        
         createNetwork()
     }
     
+    func createJoystick() {
+        let joystickView = Joystick(borderWidth: 5, controllerRadius: 0.4)
+        
+        joystickView.translatesAutoresizingMaskIntoConstraints = false
+        
+        self.view.addSubview(joystickView)
+        
+        NSLayoutConstraint.activate([
+            joystickView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10),
+            joystickView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            joystickView.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.4),
+            joystickView.heightAnchor.constraint(equalTo: joystickView.widthAnchor)
+        ])
+        
+        joystickView.delegate = self
+    }
+    
     func createNetwork() {
-        let gameName = "enzo-sumo-game"
+        guard self.mcSession == nil else {
+            return
+        }
+        
+        let gameName = "enzo-sumo"
         let myPeerID = MCPeerID(displayName: UIDevice.current.name)
         
-        mcSession = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
-        mcSession.delegate = self
+        self.mcSession = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
+        self.mcSession!.delegate = self
 
 //        var topMostViewController = UIApplication.shared.keyWindow?.rootViewController
 //
@@ -51,24 +76,29 @@ class GameViewController: UIViewController {
 //        print(topMostViewController)
         
         if isHost {
-            let advertiser = MCNearbyServiceAdvertiser(peer: myPeerID, discoveryInfo: nil, serviceType: gameName)
-            advertiser.delegate = self
-            advertiser.startAdvertisingPeer()
+//            let advertiser = MCNearbyServiceAdvertiser(peer: myPeerID, discoveryInfo: nil, serviceType: gameName)
+//            advertiser.delegate = self
+//            advertiser.startAdvertisingPeer()
+            
+            mcAdvertiserAssistant = MCAdvertiserAssistant(serviceType: gameName, discoveryInfo: nil, session: self.mcSession!)
+            mcAdvertiserAssistant.start()
             
             print("Advertising!")
             
         } else {
-            let browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: gameName)
-            browser.delegate = self
+//            let browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: gameName)
+//            browser.delegate = self
+//            browser.startBrowsingForPeers()
             
-        //self.present(MCBrowserViewController(browser: browser, session: mcSession), animated: true)
-            browser.startBrowsingForPeers()
+            let mcBrowser = MCBrowserViewController(serviceType: gameName, session: self.mcSession!)
+            mcBrowser.delegate = self
+            present(mcBrowser, animated: true)
             
             print("Browsing!")
         }
         
         
-        arView.scene.synchronizationService = try? MultipeerConnectivityService(session: mcSession)
+        arView.scene.synchronizationService = try? MultipeerConnectivityService(session: self.mcSession!)
     }
     
     func createMap(anchor: AnchorEntity) {
@@ -87,11 +117,9 @@ class GameViewController: UIViewController {
         
         plane.physicsBody?.isTranslationLocked = (x: true, y: true, z: true)
         plane.physicsBody?.isRotationLocked = (x: true, y: true, z: true)
-        //plane.physicsBody?.mode = .static
         plane.position = SIMD3(x: 0, y: -0.3, z: 0)
         
         anchor.addChild(plane)
-        //creates arena
         
         let arenaMesh = MeshResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
         
@@ -106,8 +134,6 @@ class GameViewController: UIViewController {
         anchor.addChild(arena)
         
         //creates ball
-        ball = try! Entity.loadModel(named: "soccerBall")
-        
         
         ball.generateCollisionShapes(recursive: true)
         let ballPhysics = PhysicsBodyComponent(massProperties: PhysicsMassProperties(mass: 0.2), material: .default, mode: .dynamic)
@@ -115,9 +141,6 @@ class GameViewController: UIViewController {
         
         let ballY = arenaHeight + 0.4 //0.002
         
-        //print(((ball.model?.mesh.bounds.radius)! * 2))
-        //print(ballY)
-        //ball.scale = SIMD3(repeating: 0.5)
         ball.setScale(SIMD3(repeating:0.03), relativeTo: arena)
         print(ball.scale(relativeTo: arena))
         
@@ -130,13 +153,22 @@ class GameViewController: UIViewController {
     @IBAction func tapDone(_ sender: UITapGestureRecognizer) {
         
         if !isHost || hasCreatedMap {
-            
             let tapLocation = sender.location(in: arView)
             
             let entities = arView.entities(at: tapLocation)
             
             if let ball = entities.filter( {$0.name == "ball"} ).first as? ModelEntity {
-                ball.applyLinearImpulse(SIMD3(x: 0, y: 0.003, z: 0), relativeTo: nil)
+                
+                if !isHost {
+                    ball.requestOwnership { result in
+                        if result == .granted {
+                            ball.applyLinearImpulse(SIMD3(x: 0, y: 0.003, z: 0), relativeTo: nil)
+                        }
+                    }
+                    
+                } else {
+                    ball.applyLinearImpulse(SIMD3(x: 0, y: 0.003, z: 0), relativeTo: nil)
+                }
             }
             
         } else {
@@ -159,9 +191,6 @@ class GameViewController: UIViewController {
             let anchorEntity = AnchorEntity(raycastResult: result)
             arView.scene.addAnchor(anchorEntity)
             
-//            let anchorEntity = AnchorEntity(anchor: arAnchor)
-//            arView.scene.addAnchor(anchorEntity)
-            
             createMap(anchor: anchorEntity)
             
             hasCreatedMap = true
@@ -170,32 +199,42 @@ class GameViewController: UIViewController {
     
 }
 
-extension GameViewController : MCNearbyServiceAdvertiserDelegate {
+//extension GameViewController : MCNearbyServiceAdvertiserDelegate {
+//
+//    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
+//        print("Received invitation")
+//        invitationHandler(true, self.mcSession)
+//        advertiser.stopAdvertisingPeer()
+//    }
+//
+//}
+
+extension GameViewController : MCBrowserViewControllerDelegate {
+    func browserViewControllerDidFinish(_ browserViewController: MCBrowserViewController) {
+        dismiss(animated: true)
+    }
     
-    func advertiser(_ advertiser: MCNearbyServiceAdvertiser, didReceiveInvitationFromPeer peerID: MCPeerID, withContext context: Data?, invitationHandler: @escaping (Bool, MCSession?) -> Void) {
-        print("received invitation")
-        invitationHandler(true, self.mcSession)
-        advertiser.stopAdvertisingPeer()
+    func browserViewControllerWasCancelled(_ browserViewController: MCBrowserViewController) {
+        dismiss(animated: true)
     }
     
 }
-
-
-
-extension GameViewController : MCNearbyServiceBrowserDelegate {
-    
-    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
-        print("Found peer", peerID)
-        browser.invitePeer(peerID, to: self.mcSession, withContext: nil, timeout: 10)
-        browser.stopBrowsingForPeers()
-    }
-    
-    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
-        
-    }
-    
-    
-}
+//
+//
+//extension GameViewController : MCNearbyServiceBrowserDelegate {
+//
+//    func browser(_ browser: MCNearbyServiceBrowser, foundPeer peerID: MCPeerID, withDiscoveryInfo info: [String : String]?) {
+//        print("Found peer", peerID)
+//        browser.invitePeer(peerID, to: self.mcSession!, withContext: nil, timeout: 10)
+//        browser.stopBrowsingForPeers()
+//    }
+//
+//    func browser(_ browser: MCNearbyServiceBrowser, lostPeer peerID: MCPeerID) {
+//
+//    }
+//
+//
+//}
 
 
 extension GameViewController : MCSessionDelegate {
@@ -220,5 +259,13 @@ extension GameViewController : MCSessionDelegate {
         
     }
 
+    
+}
+
+extension GameViewController : JoystickDelegate {
+    
+    func joystickMoved(angle: CGFloat, magnitude: CGFloat) {
+        print("Joystick moved! Angle: ", angle, ", magnitude: ", magnitude)
+    }
     
 }
