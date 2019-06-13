@@ -16,6 +16,8 @@
 		4780030E22B13E2B00EEA906 /* SelectViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4780030D22B13E2B00EEA906 /* SelectViewController.swift */; };
 		4780031122B140F000EEA906 /* soccerBall.usda in Resources */ = {isa = PBXBuildFile; fileRef = 4780030F22B140F000EEA906 /* soccerBall.usda */; };
 		4780031222B140F000EEA906 /* soccerBall.usdz in Resources */ = {isa = PBXBuildFile; fileRef = 4780031022B140F000EEA906 /* soccerBall.usdz */; };
+		478F918922B1F7B7002D3B8C /* Joystick.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478F918822B1F7B7002D3B8C /* Joystick.swift */; };
+		478F918B22B1F7C4002D3B8C /* JoystickDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478F918A22B1F7C4002D3B8C /* JoystickDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +32,8 @@
 		4780030D22B13E2B00EEA906 /* SelectViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectViewController.swift; sourceTree = "<group>"; };
 		4780030F22B140F000EEA906 /* soccerBall.usda */ = {isa = PBXFileReference; lastKnownFileType = asset.file.usd; path = soccerBall.usda; sourceTree = "<group>"; };
 		4780031022B140F000EEA906 /* soccerBall.usdz */ = {isa = PBXFileReference; lastKnownFileType = file.usdz; path = soccerBall.usdz; sourceTree = "<group>"; };
+		478F918822B1F7B7002D3B8C /* Joystick.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Joystick.swift; sourceTree = "<group>"; };
+		478F918A22B1F7C4002D3B8C /* JoystickDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JoystickDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -72,6 +76,8 @@
 				4780030722B13BD100EEA906 /* Info.plist */,
 				4780030F22B140F000EEA906 /* soccerBall.usda */,
 				4780031022B140F000EEA906 /* soccerBall.usdz */,
+				478F918822B1F7B7002D3B8C /* Joystick.swift */,
+				478F918A22B1F7C4002D3B8C /* JoystickDelegate.swift */,
 			);
 			path = SumoAR;
 			sourceTree = "<group>";
@@ -149,8 +155,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				478F918B22B1F7C4002D3B8C /* JoystickDelegate.swift in Sources */,
 				4780030E22B13E2B00EEA906 /* SelectViewController.swift in Sources */,
 				478002FC22B13BCE00EEA906 /* GameViewController.swift in Sources */,
+				478F918922B1F7B7002D3B8C /* Joystick.swift in Sources */,
 				478002FA22B13BCE00EEA906 /* AppDelegate.swift in Sources */,
 				4780030122B13BCE00EEA906 /* Experience.rcproject in Sources */,
 			);

@@ -27,6 +27,10 @@ class GameViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(true)
         
         createNetwork()
     }
@@ -37,6 +41,14 @@ class GameViewController: UIViewController {
         
         mcSession = MCSession(peer: myPeerID, securityIdentity: nil, encryptionPreference: .required)
         mcSession.delegate = self
+
+//        var topMostViewController = UIApplication.shared.keyWindow?.rootViewController
+//
+//        while let presentedViewController = topMostViewController?.presentedViewController {
+//            topMostViewController = presentedViewController
+//        }
+//
+//        print(topMostViewController)
         
         if isHost {
             let advertiser = MCNearbyServiceAdvertiser(peer: myPeerID, discoveryInfo: nil, serviceType: gameName)
@@ -48,6 +60,8 @@ class GameViewController: UIViewController {
         } else {
             let browser = MCNearbyServiceBrowser(peer: myPeerID, serviceType: gameName)
             browser.delegate = self
+            
+        //self.present(MCBrowserViewController(browser: browser, session: mcSession), animated: true)
             browser.startBrowsingForPeers()
             
             print("Browsing!")
@@ -130,7 +144,7 @@ class GameViewController: UIViewController {
             print("Trying to create map")
             
             guard let result = arView.raycast(from: sender.location(in: arView), allowing: .estimatedPlane, alignment: .horizontal).first else {
-                print("can't create!")
+                print("Can't create!")
                 return
             }
             
@@ -138,10 +152,15 @@ class GameViewController: UIViewController {
             
             // creates anchor
             let arAnchor = ARAnchor(name: "gameAnchor", transform: result.worldTransform)
+            print(result.worldTransform)
             arView.session.add(anchor: arAnchor)
             
-            let anchorEntity = AnchorEntity(anchor: arAnchor)
+            
+            let anchorEntity = AnchorEntity(raycastResult: result)
             arView.scene.addAnchor(anchorEntity)
+            
+//            let anchorEntity = AnchorEntity(anchor: arAnchor)
+//            arView.scene.addAnchor(anchorEntity)
             
             createMap(anchor: anchorEntity)
             
