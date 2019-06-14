@@ -128,7 +128,7 @@ class GameViewController: UIViewController {
         
         plane.physicsBody?.isTranslationLocked = (x: true, y: true, z: true)
         plane.physicsBody?.isRotationLocked = (x: true, y: true, z: true)
-        plane.position = SIMD3(x: 0, y: -0.3, z: 0)
+        plane.position = SIMD3(x: 0, y: 0, z: 0)
         
         anchor.addChild(plane)
         
@@ -145,10 +145,10 @@ class GameViewController: UIViewController {
 //        anchor.addChild(arena)
         
         map.generateCollisionShapes(recursive: true)
-        let mapPhysics = PhysicsBodyComponent(massProperties: PhysicsMassProperties(mass: 1000), material: .default, mode: .dynamic)
+        let mapPhysics = PhysicsBodyComponent(shapes: map.collision!.shapes, mass: 10000, material: .default, mode: .dynamic)
         map.physicsBody = mapPhysics
         
-        let mapY = Float(0)//0.002
+        let mapY = Float(-0.3)//0.002
         
         map.setScale(SIMD3(repeating:0.1), relativeTo: arena)
         print(map.scale(relativeTo: arena))
@@ -167,7 +167,7 @@ class GameViewController: UIViewController {
         
         let ballY = arenaHeight + 0.4 //0.002
         
-        ball.setScale(SIMD3(repeating:0.03), relativeTo: arena)
+        ball.setScale(SIMD3(repeating:0.02), relativeTo: arena)
         print(ball.scale(relativeTo: arena))
         
         ball.position = SIMD3(x: 0, y: ballY, z: 0)
@@ -277,7 +277,7 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func jumpPressed(_ sender: Any) {
-        ball.applyLinearImpulse(SIMD3(x: 0, y: 0.003, z: 0), relativeTo: nil)
+        ball.applyLinearImpulse(SIMD3(x: 0, y: 0.002, z: 0), relativeTo: nil)
     }
 }
 
