@@ -28,13 +28,12 @@ class Joystick: UIView {
     }
     
     var maxControllerRadius: CGFloat {
-        get {
-            return viewRadius
-        }
+        return viewRadius
     }
     
     var currentControllerAngle: CGFloat {
-        return atan2(viewCenter.y - self.controllerView.center.y, viewCenter.x - self.controllerView.center.x);
+        let angle = atan2(self.controllerView.center.y - viewCenter.y,  self.controllerView.center.x - viewCenter.x) / 2 + CGFloat.pi/2
+        return angle < CGFloat.pi/2 ? (CGFloat.pi/2 - angle) : CGFloat.pi/2 - angle + CGFloat.pi
     }
     
     var currentControllerRadius: CGFloat {
@@ -96,6 +95,8 @@ class Joystick: UIView {
         super.init(coder: coder)
     }
     
+    
+    
     @objc func handlePanGesture() {
         let translation = panGesture.translation(in: self)
         
@@ -106,10 +107,12 @@ class Joystick: UIView {
         // Update the position for the .began, .changed, and .ended states
         if panGesture.state == .began || panGesture.state == .changed {
             // Add the X and Y translation to the view's original position.
-            let newCenter = CGPoint(x: controllerViewCenter.x + translation.x, y: controllerViewCenter.y + translation.y)
+            let newCenter = controllerViewCenter + translation
             if controllerViewCenter.distanceTo(newCenter) <= (viewRadius) {
-                print(translation)
                 controllerView.center = newCenter
+            } else { // Currently outside of the view
+                let normalizedPoint = translation.normalized()
+                controllerView.center = controllerViewCenter + normalizedPoint * maxControllerRadius
             }
         }
         else if panGesture.state == .ended || panGesture.state == .cancelled {
@@ -130,11 +133,4 @@ class Joystick: UIView {
     }
     */
 
-}
-
-extension CGPoint {
-    
-    func distanceTo(_ point: CGPoint) -> CGFloat {
-        return CGFloat(sqrt(pow(self.x - point.x, 2) + pow(self.y - point.y, 2)))
-    }
 }

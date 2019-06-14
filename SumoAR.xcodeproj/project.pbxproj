@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4733D9AD22B333D000F485E6 /* CGPointExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4733D9AC22B333D000F485E6 /* CGPointExtensions.swift */; };
 		478002FA22B13BCE00EEA906 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478002F922B13BCE00EEA906 /* AppDelegate.swift */; };
 		478002FC22B13BCE00EEA906 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 478002FB22B13BCE00EEA906 /* GameViewController.swift */; };
 		478002FF22B13BCE00EEA906 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 478002FD22B13BCE00EEA906 /* Main.storyboard */; };
@@ -21,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4733D9AC22B333D000F485E6 /* CGPointExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGPointExtensions.swift; sourceTree = "<group>"; };
 		478002F622B13BCE00EEA906 /* SumoAR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SumoAR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		478002F922B13BCE00EEA906 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		478002FB22B13BCE00EEA906 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 				4780031022B140F000EEA906 /* soccerBall.usdz */,
 				478F918822B1F7B7002D3B8C /* Joystick.swift */,
 				478F918A22B1F7C4002D3B8C /* JoystickDelegate.swift */,
+				4733D9AC22B333D000F485E6 /* CGPointExtensions.swift */,
 			);
 			path = SumoAR;
 			sourceTree = "<group>";
@@ -158,6 +161,7 @@
 				478F918B22B1F7C4002D3B8C /* JoystickDelegate.swift in Sources */,
 				4780030E22B13E2B00EEA906 /* SelectViewController.swift in Sources */,
 				478002FC22B13BCE00EEA906 /* GameViewController.swift in Sources */,
+				4733D9AD22B333D000F485E6 /* CGPointExtensions.swift in Sources */,
 				478F918922B1F7B7002D3B8C /* Joystick.swift in Sources */,
 				478002FA22B13BCE00EEA906 /* AppDelegate.swift in Sources */,
 				4780030122B13BCE00EEA906 /* Experience.rcproject in Sources */,

@@ -106,12 +106,14 @@ class GameViewController: UIViewController {
         let arenaHeight: Float = bounds * 1.3
         let arenaDiameter: Float = bounds
         
+        let planeDiameter = arenaDiameter*100
+        
         //creates supporting plane
-        let planeMesh = MeshResource.generateBox(width: arenaDiameter*1.5, height: 0.01, depth: arenaDiameter*1.5)
+        let planeMesh = MeshResource.generateBox(width: planeDiameter, height: 0.01, depth: planeDiameter)
         
         let planeMaterial = SimpleMaterial(color: .black, isMetallic: true)//OcclusionMaterial()
         
-        let planeShape = ShapeResource.generateBox(width: arenaDiameter, height: 0.01, depth: arenaDiameter)
+        let planeShape = ShapeResource.generateBox(width: planeDiameter, height: 0.01, depth: planeDiameter)
         
         let plane = ModelEntity(mesh: planeMesh, materials: [planeMaterial], collisionShape: planeShape, mass: 1)
         
@@ -141,7 +143,7 @@ class GameViewController: UIViewController {
         
         let ballY = arenaHeight + 0.4 //0.002
         
-        ball.setScale(SIMD3(repeating:0.03), relativeTo: arena)
+        ball.setScale(SIMD3(repeating:0.05), relativeTo: arena)
         print(ball.scale(relativeTo: arena))
         
         ball.position = SIMD3(x: 0, y: ballY, z: 0)
@@ -265,7 +267,53 @@ extension GameViewController : MCSessionDelegate {
 extension GameViewController : JoystickDelegate {
     
     func joystickMoved(angle: CGFloat, magnitude: CGFloat) {
+        
+        if magnitude == 0 {
+            return
+        }
+        
+        //angle 0 = forward
+        //angle pi/4 = left
+        //angle pi/2 = backwards
+        //angle 3pi/2 = right
+        
+        //get direction that camera is facing. y axis is not important.
+        let cameraTransform = arView.cameraTransform
+        let cameraPosition = cameraTransform.translation
+        
+        var ballForwardDirection = (ball.position - cameraPosition)
+        let ballForwardDirectionLength = sqrt(ballForwardDirection.x * ballForwardDirection.x + ballForwardDirection.y * ballForwardDirection.y + ballForwardDirection.z * ballForwardDirection.z)
+        ballForwardDirection = SIMD3(x: ballForwardDirection.x/ballForwardDirectionLength, y: ballForwardDirection.y/ballForwardDirectionLength, z: ballForwardDirection.z / ballForwardDirectionLength)
+        
+        let leftX = Float(ballForwardDirection.x * cos(Float.pi * 1.5) - ballForwardDirection.z * sin(Float.pi * 1.5))
+        let leftZ = Float(ballForwardDirection.x * sin(Float.pi * 1.5) - ballForwardDirection.z * cos(Float.pi * 1.5))
+        
+        let ballLeftDirection = SIMD3(x: leftX, y: 0, z: leftZ)
+        
+        let forwardAmount = Float(cos(angle*2))
+        let leftAmount = Float(sin(angle*2))
+        
+        // angulo 0: sin 0, cos 1
+        
+        print("angle", angle*2)
+        print("forwardAmount", forwardAmount)
+        print("leftAmount", leftAmount)
+        
+        let forceVector = forwardAmount * ballForwardDirection +  leftAmount * ballLeftDirection
+        
+        print(forceVector)
+        //clear forces
+        let maxForceUnit = CGFloat(0.0008)
+        let forceUnit = Float(magnitude * maxForceUnit)
+        
+        let force = SIMD3(x: forceVector.x * forceUnit, y: 0.0001, z: forceVector.z * forceUnit)
+        
+        //apply force proportional to magnitude
+        ball.applyLinearImpulse(force, relativeTo: nil)
+        //
         print("Joystick moved! Angle: ", angle, ", magnitude: ", magnitude)
     }
     
 }
+
+// SIMD3 extension
