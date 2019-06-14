@@ -112,17 +112,17 @@ class GameViewController: UIViewController {
     
     func createMap(anchor: AnchorEntity) {
         
-        let arenaHeight: Float = bounds * 1.3
+        let arenaHeight: Float = bounds * 0.2
         let arenaDiameter: Float = bounds
         
         let planeDiameter = arenaDiameter*100
         
         //creates supporting plane
-        let planeMesh = MeshResource.generateBox(width: planeDiameter, height: 0.01, depth: planeDiameter)
+        let planeMesh = MeshResource.generateBox(width: planeDiameter, height: 0.1, depth: planeDiameter)
         
         let planeMaterial = SimpleMaterial(color: .white, isMetallic: false)//OcclusionMaterial()
         
-        let planeShape = ShapeResource.generateBox(width: planeDiameter, height: 0.01, depth: planeDiameter)
+        let planeShape = ShapeResource.generateBox(width: planeDiameter, height: 0.1, depth: planeDiameter)
         
         let plane = ModelEntity(mesh: planeMesh, materials: [planeMaterial], collisionShape: planeShape, mass: 1)
         
@@ -133,30 +133,48 @@ class GameViewController: UIViewController {
         anchor.addChild(plane)
         
 //        let arenaMesh = MeshResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
-//
+////
 //        let arenaMaterial = SimpleMaterial(color: .red, isMetallic: true)
-//
+////
 //        let arenaShape = ShapeResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
-//
+////
 //        let arena = ModelEntity(mesh: arenaMesh, materials: [arenaMaterial], collisionShape: arenaShape, mass: 100)
 //
-//        arena.position = SIMD3(x: 0, y: arenaHeight/2 + 0.001, z: 0)
+        //arena.position = SIMD3(x: 0, y: arenaHeight/2 + 0.001, z: 0)
 //
 //        anchor.addChild(arena)
         
-        map.generateCollisionShapes(recursive: true)
-        let mapPhysics = PhysicsBodyComponent(shapes: map.collision!.shapes, mass: 10000, material: .default, mode: .dynamic)
-        map.physicsBody = mapPhysics
+        map.generateCollisionShapes(recursive: false)
+        print(map.collision?.shapes.first!)
+        //let mapPhysics = PhysicsBodyComponent(massProperties: .init(mass: 100), material: .default, mode: .dynamic)
+        //map.physicsBody = mapPhysics
         
-        let mapY = Float(-0.3)//0.002
+        let mapY = Float(0.1)//0.002
         
-        map.setScale(SIMD3(repeating:0.1), relativeTo: arena)
+        //map.setScale(SIMD3(repeating:0.1), relativeTo: arena)
         print(map.scale(relativeTo: arena))
         
         map.position = SIMD3(x: 0, y: mapY, z: 0)
         map.name = "map"
         
         anchor.addChild(map)
+        
+        // testing castle bounds
+        let min = map.model?.mesh.bounds.min
+        let max = map.model?.mesh.bounds.max
+        
+        let width = abs(max!.x - min!.x)
+        let length = abs(max!.z - min!.z)
+        let height = abs(max!.y - min!.y)
+        
+        let arenaMesh = MeshResource.generateBox(width: width, height: height, depth: length)
+        let arenaMaterial = SimpleMaterial(color: .red, isMetallic: true)
+        let arenaShape = ShapeResource.generateBox(width: width, height: height, depth: length)
+        let arena = ModelEntity(mesh: arenaMesh, materials: [arenaMaterial], collisionShape: arenaShape, mass: 100)
+
+        arena.position = SIMD3(x: 1, y: mapY, z: 1)
+    
+        anchor.addChild(arena)
         
         
         //creates ball
