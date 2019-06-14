@@ -23,13 +23,24 @@ class GameViewController: UIViewController {
     
     let bounds: Float = 0.4
     var ball: ModelEntity!
+    var map: ModelEntity!
+    
     var arena: ModelEntity!
     
     var hasCreatedMap = false
     
+    var joystickView: Joystick!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        
+        arView.scene.subscribe(to: SceneEvents.Update.self, { event in
+            self.updateBall()
+        } )
+        
         ball = try! Entity.loadModel(named: "soccerBall")
+        map = try! Entity.loadModel(named: "map")
         
         createJoystick()
     }
@@ -40,20 +51,18 @@ class GameViewController: UIViewController {
     }
     
     func createJoystick() {
-        let joystickView = Joystick(borderWidth: 5, controllerRadius: 0.4)
+        joystickView = Joystick(borderWidth: 5, controllerRadius: 0.4)
         
         joystickView.translatesAutoresizingMaskIntoConstraints = false
         
         self.view.addSubview(joystickView)
         
         NSLayoutConstraint.activate([
-            joystickView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 10),
-            joystickView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 10),
+            joystickView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 20),
+            joystickView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor, constant: 20),
             joystickView.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.4),
             joystickView.heightAnchor.constraint(equalTo: joystickView.widthAnchor)
         ])
-        
-        joystickView.delegate = self
     }
     
     func createNetwork() {
@@ -111,7 +120,7 @@ class GameViewController: UIViewController {
         //creates supporting plane
         let planeMesh = MeshResource.generateBox(width: planeDiameter, height: 0.01, depth: planeDiameter)
         
-        let planeMaterial = SimpleMaterial(color: .black, isMetallic: true)//OcclusionMaterial()
+        let planeMaterial = SimpleMaterial(color: .white, isMetallic: false)//OcclusionMaterial()
         
         let planeShape = ShapeResource.generateBox(width: planeDiameter, height: 0.01, depth: planeDiameter)
         
@@ -123,17 +132,32 @@ class GameViewController: UIViewController {
         
         anchor.addChild(plane)
         
-        let arenaMesh = MeshResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
+//        let arenaMesh = MeshResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
+//
+//        let arenaMaterial = SimpleMaterial(color: .red, isMetallic: true)
+//
+//        let arenaShape = ShapeResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
+//
+//        let arena = ModelEntity(mesh: arenaMesh, materials: [arenaMaterial], collisionShape: arenaShape, mass: 100)
+//
+//        arena.position = SIMD3(x: 0, y: arenaHeight/2 + 0.001, z: 0)
+//
+//        anchor.addChild(arena)
         
-        let arenaMaterial = SimpleMaterial(color: .red, isMetallic: true)
+        map.generateCollisionShapes(recursive: true)
+        let mapPhysics = PhysicsBodyComponent(massProperties: PhysicsMassProperties(mass: 1000), material: .default, mode: .dynamic)
+        map.physicsBody = mapPhysics
         
-        let arenaShape = ShapeResource.generateBox(width: arenaDiameter, height: arenaHeight, depth: arenaDiameter)
+        let mapY = Float(0)//0.002
         
-        let arena = ModelEntity(mesh: arenaMesh, materials: [arenaMaterial], collisionShape: arenaShape, mass: 100)
+        map.setScale(SIMD3(repeating:0.1), relativeTo: arena)
+        print(map.scale(relativeTo: arena))
         
-        arena.position = SIMD3(x: 0, y: arenaHeight/2 + 0.001, z: 0)
+        map.position = SIMD3(x: 0, y: mapY, z: 0)
+        map.name = "map"
         
-        anchor.addChild(arena)
+        anchor.addChild(map)
+        
         
         //creates ball
         
@@ -143,7 +167,7 @@ class GameViewController: UIViewController {
         
         let ballY = arenaHeight + 0.4 //0.002
         
-        ball.setScale(SIMD3(repeating:0.05), relativeTo: arena)
+        ball.setScale(SIMD3(repeating:0.03), relativeTo: arena)
         print(ball.scale(relativeTo: arena))
         
         ball.position = SIMD3(x: 0, y: ballY, z: 0)
@@ -199,6 +223,62 @@ class GameViewController: UIViewController {
         }
     }
     
+    func updateBall() {
+        
+        let magnitude = joystickView.magnitude
+        let angle = joystickView.currentControllerAngle
+        
+        if magnitude == 0 {
+            return
+        }
+        
+        //angle 0 = forward
+        //angle pi/4 = left
+        //angle pi/2 = backwards
+        //angle 3pi/2 = right
+        
+        //get direction that camera is facing. y axis is not important.
+        let cameraTransform = arView.cameraTransform
+        let cameraDirection = cameraTransform.rotation.axis
+        //let cameraPosition = cameraTransform.translation
+        
+        var ballForwardDirection = (cameraDirection)
+        let ballForwardDirectionLength = sqrt(ballForwardDirection.x * ballForwardDirection.x + ballForwardDirection.y * ballForwardDirection.y + ballForwardDirection.z * ballForwardDirection.z)
+        ballForwardDirection = SIMD3(x: ballForwardDirection.x/ballForwardDirectionLength, y: ballForwardDirection.y/ballForwardDirectionLength, z: ballForwardDirection.z / ballForwardDirectionLength)
+        
+        let leftX = Float(ballForwardDirection.x * cos(Float.pi * 1.5) - ballForwardDirection.z * sin(Float.pi * 1.5))
+        let leftZ = Float(ballForwardDirection.x * sin(Float.pi * 1.5) - ballForwardDirection.z * cos(Float.pi * 1.5))
+        
+        let ballLeftDirection = SIMD3(x: leftX, y: 0, z: leftZ)
+        
+        let forwardAmount = Float(cos(angle*2))
+        let leftAmount = Float(sin(angle*2))
+        
+        // angulo 0: sin 0, cos 1
+        
+        print("angle", angle*2)
+        print("forwardAmount", forwardAmount)
+        print("leftAmount", leftAmount)
+        
+        let forceVector = forwardAmount * ballForwardDirection +  leftAmount * ballLeftDirection
+        
+        print(forceVector)
+        //clear forces
+        let maxForceUnit = -CGFloat(0.01)
+        let forceUnit = Float(magnitude * maxForceUnit)
+        
+        let force = SIMD3(x: forceVector.x * forceUnit, y: 0.0001, z: forceVector.z * forceUnit)
+        
+        //apply force proportional to magnitude
+        ball.addForce(force, relativeTo: nil)
+        //
+        print("Joystick moved! Angle: ", angle, ", magnitude: ", magnitude)
+        
+    }
+    
+    @IBAction func jumpPressed(_ sender: Any) {
+        ball.applyLinearImpulse(SIMD3(x: 0, y: 0.003, z: 0), relativeTo: nil)
+    }
 }
 
 //extension GameViewController : MCNearbyServiceAdvertiserDelegate {
@@ -279,9 +359,10 @@ extension GameViewController : JoystickDelegate {
         
         //get direction that camera is facing. y axis is not important.
         let cameraTransform = arView.cameraTransform
-        let cameraPosition = cameraTransform.translation
+        let cameraDirection = cameraTransform.rotation.axis
+        //let cameraPosition = cameraTransform.translation
         
-        var ballForwardDirection = (ball.position - cameraPosition)
+        var ballForwardDirection = (cameraDirection)
         let ballForwardDirectionLength = sqrt(ballForwardDirection.x * ballForwardDirection.x + ballForwardDirection.y * ballForwardDirection.y + ballForwardDirection.z * ballForwardDirection.z)
         ballForwardDirection = SIMD3(x: ballForwardDirection.x/ballForwardDirectionLength, y: ballForwardDirection.y/ballForwardDirectionLength, z: ballForwardDirection.z / ballForwardDirectionLength)
         
@@ -303,13 +384,13 @@ extension GameViewController : JoystickDelegate {
         
         print(forceVector)
         //clear forces
-        let maxForceUnit = CGFloat(0.0008)
+        let maxForceUnit = -CGFloat(0.01)
         let forceUnit = Float(magnitude * maxForceUnit)
         
         let force = SIMD3(x: forceVector.x * forceUnit, y: 0.0001, z: forceVector.z * forceUnit)
         
         //apply force proportional to magnitude
-        ball.applyLinearImpulse(force, relativeTo: nil)
+        ball.addForce(force, relativeTo: nil)
         //
         print("Joystick moved! Angle: ", angle, ", magnitude: ", magnitude)
     }

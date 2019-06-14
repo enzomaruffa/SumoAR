@@ -13,17 +13,17 @@ class Joystick: UIView {
     var delegate: JoystickDelegate?
     
     var controllerView: UIView!
-    var controllerRadius: CGFloat!
-    var controllerViewCenter: CGPoint!
+    private var controllerRadius: CGFloat!
+    private var controllerViewCenter: CGPoint!
     
-    var panGesture: UIPanGestureRecognizer!
+    private var panGesture: UIPanGestureRecognizer!
     
     
     var viewRadius: CGFloat {
         return self.frame.height / 2
     }
     
-    var viewCenter: CGPoint {
+    private var viewCenter: CGPoint {
         return CGPoint(x: self.frame.width/2, y: self.frame.width/2)
     }
     
@@ -38,6 +38,10 @@ class Joystick: UIView {
     
     var currentControllerRadius: CGFloat {
         return viewCenter.distanceTo(controllerView.center)
+    }
+    
+    var magnitude: CGFloat {
+        return currentControllerRadius / maxControllerRadius
     }
     
     init(borderWidth: CGFloat = 5, controllerRadius: CGFloat) {
@@ -97,7 +101,7 @@ class Joystick: UIView {
     
     
     
-    @objc func handlePanGesture() {
+    @objc private func handlePanGesture() {
         let translation = panGesture.translation(in: self)
         
         if panGesture.state == .began {
@@ -120,9 +124,11 @@ class Joystick: UIView {
         }
         
         if let delegate = delegate {
-            delegate.joystickMoved(angle: currentControllerAngle, magnitude: currentControllerRadius / maxControllerRadius)
+            delegate.joystickMoved(angle: currentControllerAngle, magnitude: magnitude)
         }
     }
+    
+    
     
     
     /*

@@ -63,9 +63,19 @@
                                     <outletCollection property="gestureRecognizers" destination="D5O-aa-kSl" appends="YES" id="kEb-kR-sGs"/>
                                 </connections>
                             </arView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ckw-IQ-tX0">
+                                <rect key="frame" x="61" y="816" width="39" height="30"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <state key="normal" title="Jump"/>
+                                <connections>
+                                    <action selector="jumpPressed:" destination="7Mi-I0-n5q" eventType="touchUpInside" id="epc-lh-f8J"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
+                            <constraint firstItem="ckw-IQ-tX0" firstAttribute="bottom" secondItem="4Fg-Pw-aAJ" secondAttribute="bottom" constant="-50" id="9I9-Ae-IXA"/>
+                            <constraint firstItem="4Fg-Pw-aAJ" firstAttribute="leading" secondItem="ckw-IQ-tX0" secondAttribute="trailing" constant="-100" id="Eqh-Sl-UX6"/>
                             <constraint firstAttribute="trailing" secondItem="4Fg-Pw-aAJ" secondAttribute="trailing" id="KKi-c2-Vk3"/>
                             <constraint firstItem="4Fg-Pw-aAJ" firstAttribute="top" secondItem="lXL-8b-VlC" secondAttribute="top" id="V1b-9f-p7g"/>
                             <constraint firstItem="4Fg-Pw-aAJ" firstAttribute="leading" secondItem="lXL-8b-VlC" secondAttribute="leading" id="XO6-jH-J1J"/>

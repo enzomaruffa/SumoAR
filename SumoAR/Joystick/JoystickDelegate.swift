@@ -11,5 +11,5 @@ import UIKit
 protocol JoystickDelegate {
     
     func joystickMoved(angle: CGFloat, magnitude: CGFloat) // Angle from center, relative distance to center
-    
+
 }
